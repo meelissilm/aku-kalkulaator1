@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aku Kalkulaator</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; background: #f4f4f9; }
+    h1 { color: #333; }
+    label { display: block; margin-top: 15px; }
+    input { padding: 8px; width: 100%; max-width: 300px; }
+    button { margin-top: 20px; padding: 10px 20px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+    button:hover { background: #45a049; }
+    .result { margin-top: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <h1>Aku Kalkulaator</h1>
+  <label>Normaalne tarbimine (A): <input type="number" id="in" step="0.01"></label>
+  <label>Häire tarbimine (A): <input type="number" id="ih" step="0.01"></label>
+  <label>Normaal tööaeg (h): <input type="number" id="tn" value="72"></label>
+  <label>Häire tööaeg (h): <input type="number" id="th" value="0.5"></label>
+  <label>Kas arvestada vananemiskoefitsienti 1.3? 
+    <input type="checkbox" id="coef" checked>
+  </label>
+  <button onclick="calculate()">Arvuta</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    function calculate() {
+      let IN = parseFloat(document.getElementById('in').value) || 0;
+      let IH = parseFloat(document.getElementById('ih').value) || 0;
+      let Tn = parseFloat(document.getElementById('tn').value) || 0;
+      let Th = parseFloat(document.getElementById('th').value) || 0;
+      let coef = document.getElementById('coef').checked ? 1.3 : 1.0;
+
+      let M = coef * (IN * Tn + IH * Th);
+      document.getElementById('result').innerHTML =
+        "<b>Vajalik aku mahtuvus:</b> " + M.toFixed(2) + " Ah";
+    }
+  </script>
+</body>
+</html>
