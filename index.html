@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="et">
 <head>
@@ -14,7 +13,6 @@
   button:hover { background: #0056b3; cursor: pointer; }
   #result { margin-top: 20px; padding: 10px; background: #fff; border-radius: 5px; }
 
-  /* Loenduri stiil paremasse allnurka */
   #viewcounter {
     position: fixed;
     bottom: 10px;
@@ -27,7 +25,6 @@
     z-index: 1000;
   }
 
-  /* Kellaaeg-kuupäev paremas ülanurgas */
   #datetime {
     position: fixed;
     top: 10px;
@@ -65,10 +62,7 @@
 
 <div id="result"></div>
 
-<!-- Loendur paremas allnurgas -->
 <div id="viewcounter">Lehte on vaadatud: <span id="viewcount">0</span> korda</div>
-
-<!-- Kellaaeg ja kuupäev paremas ülanurgas -->
 <div id="datetime"></div>
 
 <script>
@@ -79,21 +73,32 @@
     const timeA = parseFloat(document.getElementById('timeAlarm').value) || 0;
     const cap = parseFloat(document.getElementById('capacity').value) || 0;
 
-    const needAh = (IN/1000 * timeN) + (IH/1000 * timeA);
+    if (IN < 0 || IH < 0 || timeN < 0 || timeA < 0 || cap < 0) {
+      document.getElementById('result').innerHTML =
+        "<span style='color:red'>Sisendväärtused peavad olema positiivsed!</span>";
+      return;
+    }
 
+    const needAh = (IN/1000 * timeN) + (IH/1000 * timeA);
     let resultText = "<b>Nõutav mahtuvus:</b> " + needAh.toFixed(2) + " Ah<br>";
-    if (cap > 0) {
-      resultText += "<b>Valitud aku kestvus:</b> " + (cap / (needAh/timeN)).toFixed(1) + " h (ligikaudne)";
+
+    if (cap > 0 && (timeN+timeA) > 0) {
+      const totalCurrent = needAh;
+      const avgCurrent = totalCurrent / (timeN + timeA);
+      const runtime = cap / avgCurrent;
+      resultText += "<b>Valitud aku kestvus:</b> " + runtime.toFixed(1) + " h (ligikaudne)";
     }
     document.getElementById('result').innerHTML = resultText;
   }
 
-  // CountAPI loendur
-  fetch('https://api.countapi.xyz/hit/meelissilm.github.io/aku-kalkulaator1/visits')
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById('viewcount').textContent = data.value;
-    });
+  // Loendur (LocalStorage)
+  let views = localStorage.getItem("page_views");
+  if (!views) {
+    views = 0;
+  }
+  views++;
+  localStorage.setItem("page_views", views);
+  document.getElementById("viewcount").textContent = views;
 
   // Kellaaeg ja kuupäev
   function updateDateTime() {
